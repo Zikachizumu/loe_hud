@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <div id="hud">
+
+        <!-- ============ SAĞ ÜST: bilgi + para ============ -->
+        <section id="cluster" class="cluster hidden">
+            <!-- ID + aktif oyuncu -->
+            <div class="idrow" data-group="info">
+                <div class="id"><span class="lbl">ID</span><span class="val" id="idVal">—</span></div>
+                <div class="online">
+                    <span class="ic ic-user"></span>
+                    <span class="cnt" id="playersVal">0</span>
+                </div>
+            </div>
+
+            <!-- Bank / Cash (ikon + $ + tutar) -->
+            <div class="wallet" data-group="money">
+                <div class="w-row bank"><span class="ic ic-bank"></span><span class="w-cur">$</span><span class="w-amt" id="bankVal">0</span></div>
+                <div class="w-row cash"><span class="ic ic-cash"></span><span class="w-cur">$</span><span class="w-amt" id="cashVal">0</span></div>
+            </div>
+
+            <!-- Aranma yıldızları (para ile saat arası) — feat/wanted-stars.
+                 Aranma yokken tamamen gizli: saat yukarı kayar, HUD eski haline
+                 döner. Aranınca satır görünür, saati bir satır aşağı iter.
+                 ★ = &#9733; (font karakteri; text-shadow ile parlıyor). -->
+            <div class="wanted hidden" id="wantedRow" data-group="info">
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+                <span class="star">&#9733;</span>
+            </div>
+
+            <!-- Saat (yıldız yoksa cash altında, yıldız varsa bir satır aşağıda) -->
+            <div class="time" id="timeVal" data-group="info">00:00</div>
+
+            <!-- Mermi (saat altı): çantadaki toplam / şarjördeki. Silah çekiliyken
+                 görünür (ox_inventory). Örn. 150 / 30. app.js > 'ammo'. -->
+            <div class="ammo hidden" id="ammoRow" data-group="info"><span id="ammoReserve">0</span><span class="sep">/</span><span id="ammoClip">0</span></div>
+        </section>
+
+        <!-- ============ SOL ALT: cadde + durum ============ -->
+        <div id="street" class="street hidden">
+            <span class="ic ic-pin"></span>
+            <span class="st-name" id="streetVal">—</span>
+        </div>
+
+        <section id="status" class="status hidden">
+            <div class="stat hp"    data-key="health"><span class="ic ic-heart"></span><span class="pct" id="healthPct">0%</span></div>
+            <div class="stat arm"   data-key="armor"><span class="ic ic-shield"></span><span class="pct" id="armorPct">0%</span></div>
+            <div class="stat food"  data-key="hunger"><span class="ic ic-burger"></span><span class="pct" id="hungerPct">0%</span></div>
+            <div class="stat water" data-key="thirst"><span class="ic ic-droplet"></span><span class="pct" id="thirstPct">0%</span></div>
+        </section>
+
+        <!-- ============ SAĞ ALT: HIZ GÖSTERGE (cam) ============ -->
+        <section id="vehicle" class="speedo hidden">
+            <div class="gauge">
+                <div class="segments">
+                    <div class="seg" data-i="0"><span class="seg-fill" id="seg0"></span></div>
+                    <div class="seg" data-i="1"><span class="seg-fill" id="seg1"></span></div>
+                    <div class="seg" data-i="2"><span class="seg-fill" id="seg2"></span></div>
+                    <div class="seg" data-i="3"><span class="seg-fill" id="seg3"></span></div>
+                </div>
+                <div class="speedbox">
+                    <span class="spd" id="speedVal">0</span><span class="unit" id="speedUnit">KM/H</span>
+                </div>
+            </div>
+
+            <div class="inds">
+                <div class="ind engine" id="tgEngine"><span class="dot"><span class="ic ic-engine"></span></span><span class="hk" id="hkEngine"></span></div>
+                <div class="ind belt"   id="tgBelt"><span class="dot"><span class="ic ic-seatbelt"></span></span><span class="hk" id="hkBelt"></span></div>
+                <div class="ind lock"   id="tgLock"><span class="dot"><span class="ic ic-lock"></span></span><span class="hk" id="hkLock"></span></div>
+                <div class="ind cruise" id="tgCruise"><span class="dot"><span class="ic ic-gauge"></span></span><span class="hk" id="hkCruise"></span></div>
+                <div class="ind fuel"   id="mtFuel"><span class="dot"><span class="ic ic-fuel"></span></span><span class="val" id="fuelVal">0%</span></div>
+                <div class="ind health" id="mtHealth"><span class="dot"><span class="ic ic-wrench"></span></span><span class="val" id="healthVal">0%</span></div>
+            </div>
+        </section>
+
+    </div>
+    <script src="js/app.js"></script>
+</body>
+</html>
+

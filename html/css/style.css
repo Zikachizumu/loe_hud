@@ -1,0 +1,274 @@
+/* ============================================================
+   loe_hud — style
+   Palet, ölçüler ve konumlar CSS değişkeni; magic number yok.
+   Tüm ölçüler rem; kök font-size ekran yüksekliğiyle ölçeklenir
+   (1080p / 2K / 4K / ultrawide'da tutarlı boyut).
+   ============================================================ */
+
+:root{
+    /* ---- Palet (brief) ---- */
+    --gold:      #D4AF37;              /* ana vurgu */
+    --txt:       #ffffff;             /* birincil yazı */
+    --txt-2:     #BEBEBE;             /* ikincil yazı */
+    --edge:      rgba(255,255,255,0.09); /* #ffffff10 border */
+    --tg-off:    #9aa0aa;             /* pasif ikon (gri-beyaz) */
+
+    /* Hız gösterge (cam) renkleri */
+    --glass:     rgba(16,18,22,0.42);
+    --glass-2:   rgba(255,255,255,0.05);
+    --seg-white: #f4f6fb;
+    --seg-green: #4fd08a;
+    --seg-yellow:#f2c94c;
+    --seg-red:   #eb5757;
+    --ind-blue:  #4a97e0;
+    --ind-teal:  #38c9c0;
+    --ind-orange:#e69646;
+
+    /* Durum renkleri */
+    --c-hp:      #e5484d;             /* can — kırmızı */
+    --c-arm:     #46c26a;             /* zırh — yeşil */
+    --c-food:    #e79b45;             /* yemek — turuncu */
+    --c-water:   #4a97e0;             /* su — mavi */
+    --c-bad:     #e5484d;             /* düşük eşik */
+    --premium:   #FF3E9A;             /* premium benzin — pompa ikonu */
+
+    /* ---- Ölçüler ---- */
+    --blur:      4px;                 /* çok hafif */
+    --radius:    0.9rem;
+    --shadow:    0 0.1rem 0.3rem rgba(0,0,0,.9), 0 0 0.2rem rgba(0,0,0,.7);
+    --wanted-star: 3rem;             /* aranma yıldızı boyu */
+
+    /* ---- Konum ayarları (çözünürlüğe göre nudge edilebilir) ---- */
+    --pad-x:        1.9rem;
+    --pad-y:        2.4rem;
+    --cluster-top:  4.6rem;           /* sağ üst küme (1 satır aşağı) */
+    --status-left:  1.8rem;           /* minimap altı, sol hiza */
+    --status-bottom:1.4rem;
+    --street-left:  1.4rem;
+    --street-bottom:20.5rem;          /* minimap'in üstü */
+
+    --font: 'Inter', -apple-system, 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Kök ölçek: ekran yüksekliğine bağlı */
+html{ font-size: clamp(9px, 0.9vh, 20px); }
+
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+body{
+    font-family: var(--font);
+    background: transparent;
+    color: var(--txt);
+    overflow: hidden;
+    user-select: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+.hidden{ display: none !important; }
+
+/* Minimap ile eşitleme: minimap ekranda değilken tüm HUD gizli.
+   cl_hud.lua > MINIMAP SYNC bu sınıfı #hud üzerinde açıp kapatır. */
+#hud.mm-hidden{ display: none !important; }
+
+/* ---- Mask tabanlı ikonlar (icons/ klasöründen, currentColor ile renklenir) ---- */
+.ic{
+    display:inline-block; width:1.7rem; height:1.7rem;
+    background-color: currentColor;
+    -webkit-mask: var(--src) no-repeat center / contain;
+            mask: var(--src) no-repeat center / contain;
+}
+.ic-user{ --src:url(../icons/user.svg); }
+.ic-bank{ --src:url(../icons/bank.svg); }
+.ic-cash{ --src:url(../icons/cash.svg); }
+.ic-heart{ --src:url(../icons/heart.svg); }
+.ic-shield{ --src:url(../icons/shield.svg); }
+.ic-burger{ --src:url(../icons/burger.svg); }
+.ic-droplet{ --src:url(../icons/droplet.svg); }
+.ic-pin{ --src:url(../icons/pin.svg); }
+.ic-seatbelt{ --src:url(../icons/seatbelt.svg); }
+.ic-power{ --src:url(../icons/power.svg); }
+.ic-engine{ --src:url(../icons/engine.svg); }
+.ic-lock{ --src:url(../icons/lock.svg); }
+.ic-gauge{ --src:url(../icons/gauge.svg); }
+.ic-fuel{ --src:url(../icons/fuel.svg); }
+.ic-electric{ --src:url(../icons/electric.svg); }  /* elektrikli araçta yakıt yerine */
+.ic-wrench{ --src:url(../icons/wrench.svg); }
+
+/* ============================ SAĞ ÜST ============================ */
+.cluster{
+    position: fixed; top: var(--cluster-top); right: var(--pad-x);
+    display:flex; flex-direction:column; align-items:flex-end; gap:0.7rem;
+    text-shadow: var(--shadow);
+}
+.idrow{ display:flex; align-items:center; gap:1.2rem; }
+.id{ display:flex; align-items:baseline; gap:0.5rem; }
+.id .lbl{ font-size:1.4rem; font-weight:600; letter-spacing:0.14rem; color:var(--gold); }
+.id .val{ font-size:2.05rem; font-weight:600; font-variant-numeric:tabular-nums; }
+.online{ display:flex; align-items:center; gap:0.45rem; color:var(--gold); }
+.online .ic{ width:1.85rem; height:1.85rem; }
+.online .cnt{ font-size:1.95rem; font-weight:600; color:var(--txt); font-variant-numeric:tabular-nums; }
+
+.wallet{ display:flex; flex-direction:column; align-items:flex-end; gap:0.35rem; margin-top:0.2rem; }
+.w-row{ display:flex; align-items:center; gap:0.6rem; font-variant-numeric:tabular-nums; }
+.w-row .ic{ width:1.85rem; height:1.85rem; color:var(--gold); }
+.w-row .w-cur{ font-size:1.75rem; font-weight:600; color:var(--gold); }
+/* Sağ üst kümede TEK TİP sayı yazısı — bank/cash tutarı = saat = mermi sayacı:
+   aynı punto, ağırlık, harf aralığı, tabular rakam. Renk ayrı ayrı verilir. */
+.w-row .w-amt,
+.time,
+.ammo{
+    font-size:2.05rem; font-weight:600; letter-spacing:0.02rem;
+    font-variant-numeric:tabular-nums;
+    color:var(--txt);
+}
+.w-row.cash .w-amt{ color:#efe6c8; }
+
+.time{ margin-top:0.15rem; }
+
+/* ---- Mermi sayacı (saat altı): çantadaki toplam / şarjördeki ----
+   Silah çekili değilken .hidden ile kaldırılır; satır yer kaplamaz.
+   Yazı stili yukarıdaki tek-tip kuraldan gelir (bank/cash ile birebir). */
+.ammo{ margin-top:0.2rem; }
+.ammo .sep{ margin:0 0.4rem; color:var(--txt-2); }
+
+/* ---- Aranma yıldızları (sağ üst: para ile saat arası) — feat/wanted-stars ----
+   ★ font karakteri (SVG maske DEĞİL) → text-shadow ile parlıyor, dosya yok.
+   Aranma yokken .hidden ile komple kaldırılır; satır yer kaplamaz, saat yukarı
+   kayar. Boyut --wanted-star ile ayarlanır.
+   row-reverse: DOM'daki 1. yıldız EN SAĞDA. app.js ilk N yıldızı yakınca
+   yıldızlar SAĞDAN SOLA doğru dolar (GTA aranma yönü). */
+.wanted{
+    display:flex; flex-direction:row-reverse; align-items:center; gap:0.5rem;
+    margin-top:0.15rem;
+    animation: wantedIn .25s ease;       /* gizliden görünüre geçerken bir kez */
+}
+.wanted .star{
+    font-size: var(--wanted-star); line-height:1;
+    color: rgba(255,255,255,0.50);       /* kazanılmamış yıldız — soluk beyaz */
+    text-shadow: 0 0.12rem 0.25rem rgba(0,0,0,.95), 0 0 0.15rem rgba(0,0,0,.9);
+    transition: color .2s ease, text-shadow .2s ease, transform .2s ease;
+}
+.wanted .star.on{
+    color: var(--gold);                  /* yanan yıldız — HUD ana vurgu (altın) */
+    text-shadow:
+        0 0 0.8rem rgba(212,175,55,.65),  /* altın parıltı */
+        0 0 0.35rem rgba(212,175,55,.5),
+        0 0.14rem 0.28rem rgba(0,0,0,.95),/* parlak gökyüzünde okunur kalsın */
+        0 0 0.18rem rgba(0,0,0,.9);
+}
+.wanted .star.on.pulse{ animation: starPulse .5s ease; }
+
+@keyframes wantedIn{
+    from{ opacity:0; transform:translateY(-0.3rem); }
+    to  { opacity:1; transform:none; }
+}
+@keyframes starPulse{
+    0%{ transform:scale(1); } 40%{ transform:scale(1.3); } 100%{ transform:scale(1); }
+}
+
+/* Para değişince küçük fade (istenen tek para animasyonu) */
+.w-amt.fade{ animation: fade .45s ease; }
+@keyframes fade{ from{ opacity:.35; } to{ opacity:1; } }
+
+/* ============================ SOL ALT ============================ */
+.street{
+    position: fixed; left: var(--street-left); bottom: var(--street-bottom);
+    display:flex; align-items:center; gap:0.55rem;
+    padding:0.35rem 0.8rem; border-radius:0.7rem;
+    border:1px solid var(--edge);
+    backdrop-filter: blur(var(--blur)); -webkit-backdrop-filter: blur(var(--blur));
+    text-shadow: var(--shadow);
+}
+.street .ic{ width:1.25rem; height:1.25rem; color:var(--gold); }
+.street .st-name{ font-size:1.2rem; font-weight:600; letter-spacing:0.03rem; color:#fff; }
+
+/* Durum: minimap altında YATAY (soldan sağa); her biri ikon + sağında % */
+.status{
+    position: fixed; left: var(--status-left); bottom: var(--status-bottom);
+    display:flex; flex-direction:row; align-items:center; gap:1.2rem;
+    text-shadow: var(--shadow);
+}
+.stat{ display:flex; flex-direction:row; align-items:center; gap:0.65rem; }
+.stat .ic{ width:2.2rem; height:2.2rem; }
+.stat .pct{ font-size:1.7rem; font-weight:600; font-variant-numeric:tabular-nums; min-width:3.6rem; }
+.stat.hp{ color:var(--c-hp); }
+.stat.arm{ color:var(--c-arm); }
+.stat.food{ color:var(--c-food); }
+.stat.water{ color:var(--c-water); }
+
+/* Can azalırken yumuşak geçiş (0.2s) */
+.stat .pct{ transition: color .2s ease; }
+
+/* ==================== SAĞ ALT: HIZ GÖSTERGE ==================== */
+.speedo{
+    position: fixed; right: var(--pad-x); bottom: var(--pad-y);
+    display:flex; flex-direction:column; align-items:flex-start; gap:0.85rem;
+    padding: 0.9rem 1.1rem;
+    background: rgba(0,0,0,0.20);      /* %20 siyah saydam */
+    border-radius: 1rem;
+    text-shadow: var(--shadow);
+    transform: scale(1.35); transform-origin: bottom right; /* %10 daha küçültüldü */
+}
+/* Hız barı — kalınlık profili (üst kenar kademeli dikleşir, sağa doğru):
+   0-100 & 101-200 = ince sabit · 201-300 = orta rampa · 300+ = en dik (sayı üst hizası).
+   Sayı ile bar üst üste: sayı solda, kırmızı sağda yukarı çıkar. */
+.gauge{ position:relative; width:100%; height:3.8rem; }
+.segments{ position:absolute; inset:0; display:flex; align-items:stretch;
+    clip-path: polygon(0% 84%, 50% 84%, 75% 52%, 100% 0%, 100% 100%, 0% 100%); }
+.seg{ position:relative; flex:1; overflow:hidden; }
+.seg[data-i="0"]{ background:rgba(244,246,251,.08); }
+.seg[data-i="1"]{ background:rgba(79,208,138,.09); }
+.seg[data-i="2"]{ background:rgba(242,201,76,.09); }
+.seg[data-i="3"]{ background:rgba(235,87,87,.10); }
+.seg-fill{ position:absolute; inset:0; transform:scaleX(0); transform-origin:left; will-change:transform;
+    transition: transform .2s cubic-bezier(.4,0,.2,1); }
+.seg[data-i="0"] .seg-fill{ background:var(--seg-white);  box-shadow:0 0 0.6rem rgba(244,246,251,.45); }
+.seg[data-i="1"] .seg-fill{ background:var(--seg-green);  box-shadow:0 0 0.6rem rgba(79,208,138,.45); }
+.seg[data-i="2"] .seg-fill{ background:var(--seg-yellow); box-shadow:0 0 0.6rem rgba(242,201,76,.45); }
+.seg[data-i="3"] .seg-fill{ background:var(--seg-red);    box-shadow:0 0 0.6rem rgba(235,87,87,.45); }
+
+/* Hız — sol üst, bar ile üst üste (üstte) */
+.speedbox{ position:absolute; left:0; top:0; z-index:2; display:flex; align-items:baseline; gap:0.4rem; line-height:1; }
+.spd{ font-size:3.6rem; font-weight:700; font-variant-numeric:tabular-nums; letter-spacing:-0.04rem;
+      transition: color .25s ease, transform .14s ease; }
+.spd.bump{ transform:scale(1.05); }
+.unit{ font-size:1.4rem; font-weight:600; letter-spacing:0.08rem; color:var(--txt-2); }
+
+/* Cam göstergeler — hepsi beyaz */
+.inds{ display:flex; align-items:flex-start; gap:0.85rem; }
+.ind{ display:flex; flex-direction:column; align-items:center; gap:0.28rem; }
+.dot{ width:3rem; height:3rem; border-radius:50%; display:grid; place-items:center;
+      background:var(--glass-2); border:1px solid rgba(255,255,255,.08); color:#ffffff;
+      transition: color .3s ease, box-shadow .3s ease, border-color .3s ease; }
+.dot .ic{ width:1.5rem; height:1.5rem; }
+.ind .val{ font-size:0.95rem; font-weight:600; color:#ffffff; font-variant-numeric:tabular-nums; }
+
+/* Kısayol tuşu etiketi — loe_vehicles gönderir, o resource yoksa gizli.
+   Oyuncu tuşunu değiştirirse buradaki yazı da değişir.
+   Tipografi yakıt / motor sağlığı yüzdeleriyle birebir aynı (bkz. .ind .val):
+   aynı punto, ağırlık, renk ve saydamlık. */
+.hk{ display:none; font-size:0.95rem; font-weight:600; color:#ffffff;
+     font-variant-numeric:tabular-nums;
+     /* Beklenmedik uzun tuş adı paneli yana kaydırmasın (emniyet supabı —
+        asıl kısaltma loe_vehicles tarafında yapılıyor). */
+     max-width:4.5rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.hk.show{ display:block; }
+
+/* Motor / kemer / kilit / cruise aktifken YEŞİL (pasif beyaz) */
+.ind.on .dot{ color:var(--seg-green); border-color:rgba(79,208,138,.5); box-shadow:0 0 1rem rgba(79,208,138,.45); }
+
+/* Benzin ve motor sağlığı %25 altında kırmızı */
+.ind.crit .dot, .ind.crit .val{ color:var(--seg-red); border-color:rgba(235,87,87,.4); box-shadow:0 0 1rem rgba(235,87,87,.4); }
+
+/* Premium benzin alınmış araç: pompa ikonu pembe. %25 altı kırmızı uyarı
+   (.crit) öncelikli — yakıt bitiyor uyarısı premium renginin altında kalmasın. */
+.ind.fuel.premium:not(.crit) .dot{ color:var(--premium); border-color:rgba(255,62,154,.5); box-shadow:0 0 1rem rgba(255,62,154,.45); }
+
+@media (prefers-reduced-motion: reduce){
+    .w-amt.fade{ animation:none; }
+    .stat .pct{ transition:none; }
+    .wanted{ animation:none; }
+    .wanted .star{ transition:none; }
+    .wanted .star.on.pulse{ animation:none; }
+}
+
