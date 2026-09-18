@@ -185,12 +185,12 @@ body{
 /* Durum: minimap altında YATAY (soldan sağa); her biri ikon + sağında % */
 .status{
     position: fixed; left: var(--status-left); bottom: var(--status-bottom);
-    display:flex; flex-direction:row; align-items:center; gap:1.2rem;
+    display:flex; flex-direction:row; align-items:center; gap:0.7rem;
     text-shadow: var(--shadow);
 }
-.stat{ display:flex; flex-direction:row; align-items:center; gap:0.65rem; }
+.stat{ display:flex; flex-direction:row; align-items:center; gap:0.25rem; }
 .stat .ic{ width:2.2rem; height:2.2rem; }
-.stat .pct{ font-size:1.7rem; font-weight:600; font-variant-numeric:tabular-nums; min-width:3.6rem; }
+.stat .pct{ font-size:1.7rem; font-weight:600; font-variant-numeric:tabular-nums; min-width:3.1rem; }
 .stat.hp{ color:var(--c-hp); }
 .stat.arm{ color:var(--c-arm); }
 .stat.food{ color:var(--c-food); }

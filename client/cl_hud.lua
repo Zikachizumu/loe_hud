@@ -164,6 +164,21 @@ CreateThread(function()
     end
 end)
 
+-- ------------------------------------------------------------------ NUI RESYNC
+-- NUI sayfası Lua'dan sonra hazır olabilir; o aralıkta gönderilen mesajlar
+-- kaybolur. Değişmeyen veriler (dururken can/açlık, sabit para) bir daha
+-- gönderilmediği için ilgili panel kalıcı olarak gizli kalırdı. Önbelleği
+-- periyodik temizleyip panelleri yeniden yolluyoruz.
+CreateThread(function()
+    while true do
+        Wait(2000)
+        last.status = {}
+        last.money  = {}
+        last.info   = {}
+        last.street = {}
+    end
+end)
+
 -- ------------------------------------------------------------------ VEHICLE loop
 CreateThread(function()
     while true do
@@ -305,14 +320,30 @@ end
 -- GTA can/zırh çubuklarını gizle — minimap boyutuna dokunmaz (bigmap yenilemesi YOK)
 if Config.HideDefaultHealthArmor then
     CreateThread(function()
+        while not NetworkIsSessionStarted() do Wait(250) end
+        while not IsMinimapRendering() do Wait(250) end
+        Wait(1000)
+
         local mm = RequestScaleformMovie('minimap')
-        while not HasScaleformMovieLoaded(mm) do Wait(0); mm = RequestScaleformMovie('minimap') end
-        while true do
-            BeginScaleformMovieMethod(mm, 'SETUP_HEALTH_ARMOUR')
-            ScaleformMovieMethodAddParamInt(3)  -- 3 = can+zırh gizli
-            EndScaleformMovieMethod()
-            Wait(0)
-        end
+        while not HasScaleformMovieLoaded(mm) do Wait(0) end
+
+        CreateThread(function()
+            while true do
+                BeginScaleformMovieMethod(mm, 'SETUP_HEALTH_ARMOUR')
+                ScaleformMovieMethodAddParamInt(3)  -- 3 = can+zırh gizli
+                EndScaleformMovieMethod()
+                Wait(0)
+            end
+        end)
+
+        -- SETUP_HEALTH_ARMOUR bu sürümde (GTA V Enhanced) minimap'i render dışı
+        -- bırakıyor: girişte minimap hiç çizilmiyor, ESC açıp kapatınca düzeliyor.
+        -- Bigmap'i bir an açıp kapatmak minimap'i yeniden kurar — ESC'nin yaptığı
+        -- yenilemenin kod karşılığı.
+        Wait(200)
+        SetBigmapActive(true, false)
+        Wait(50)
+        SetBigmapActive(false, false)
     end)
 end
 
@@ -332,8 +363,18 @@ end)
 -- (cinematic) yollarıyla çakışmaz, hepsi bağımsız katman.
 if Config.SyncWithMinimap then
     CreateThread(function()
-        local shown = true   -- NUI'ye en son bildirilen durum
+        local shown = nil   -- NUI'ye en son bildirilen durum (nil: henuz hic gonderilmedi)
         local miss  = 0      -- üst üste "minimap kapalı" okuması (titreme filtresi)
+        local lastSend = 0   -- son gonderim zamani (heartbeat icin)
+
+        local function report(visible)
+            if visible ~= shown or (GetGameTimer() - lastSend) > 2000 then
+                shown = visible
+                lastSend = GetGameTimer()
+                send('minimap', { visible = visible })
+            end
+        end
+
         while true do
             local r = IsMinimapRendering()
             -- Minimap gerçekten ekranda mı? (DisplayRadar(false), HideHudAndRadar,
@@ -343,15 +384,15 @@ if Config.SyncWithMinimap then
             if IsPauseMenuActive() then
                 -- ESC menüsü: anında gizle (menü fade'iyle eş zamanlı, debounce yok)
                 miss = 0
-                if shown then shown = false; send('minimap', { visible = false }) end
+                report(false)
             elseif mapOn then
                 miss = 0
-                if not shown then shown = true; send('minimap', { visible = true }) end
+                report(true)
             else
                 -- 1 tick'lik sahte "kapalı" okumasında titremeyi önlemek için
                 -- üst üste 2 okuma bekle, sonra gizle.
                 miss = miss + 1
-                if shown and miss >= 2 then shown = false; send('minimap', { visible = false }) end
+                if shown ~= false and miss >= 2 then report(false) end
             end
 
             Wait(Config.MinimapTick or 100)
